@@ -6,7 +6,7 @@ using System.Text;
 using System.Reflection.Metadata;
 using System.IO;
 
-namespace Zadanie1.Tests
+namespace Zadanie3.Tests
 {
     public class ConsoleRedirectionToStringWriter : IDisposable
     {
@@ -284,6 +284,27 @@ namespace Zadanie1.Tests
             Assert.AreEqual(3, copier.Counter);
         }
 
- 
+        [TestMethod]
+        public void MultiFunctionalDevice_Print_DeviceOn()
+        {
+            var allInOne = new MultifunctionalDevice();
+
+            allInOne.PowerOn();
+
+            var currentConsoleOut = Console.Out;
+            currentConsoleOut.Flush();
+            using (var consoleOutput = new ConsoleRedirectionToStringWriter())
+            {
+                IDocument doc1 = new PDFDocument("aaa.pdf");
+                allInOne.Print(in doc1);
+                Assert.IsTrue(consoleOutput.GetOutput().Contains("Print"));
+
+                allInOne.Fax(in doc1, "997");
+                Assert.IsTrue(consoleOutput.GetOutput().Contains("Send"));
+            }
+            Assert.AreEqual(currentConsoleOut, Console.Out);
+        }
+
+
     }
 }
